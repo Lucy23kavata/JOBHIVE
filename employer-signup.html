@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employer Registration - JobHive Kenya</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="auth.css">
+    <link rel="stylesheet" href="els.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-firestore-compat.js"></script>
+    <!-- Custom Scripts -->
+    <script src="firebase.js"></script>
+    <script src="auth.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">JobHive Kenya</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="jobs.html">Jobs</a>
+            <a href="resume.html">Resume Builder</a>
+            <a href="employer.html" class="active">For Employers</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="auth-container">
+        <div class="auth-box">
+            <h1>Employer Registration</h1>
+            <form id="employerSignupForm" class="auth-form">
+                <div class="form-group">
+                    <label for="companyName">Company Name</label>
+                    <input type="text" id="companyName" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Company Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="location">Company Location</label>
+                    <select id="location" required>
+                        <option value="">Select Location</option>
+                        <option value="nairobi">Nairobi</option>
+                        <option value="mombasa">Mombasa</option>
+                        <option value="kisumu">Kisumu</option>
+                        <option value="remote">Remote</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Company Phone</label>
+                    <input type="tel" id="phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="website">Company Website (Optional)</label>
+                    <input type="url" id="website">
+                </div>
+                <div class="form-group">
+                    <label for="description">Company Description</label>
+                    <textarea id="description" rows="4" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Create Employer Account</button>
+                <p class="auth-switch">Already have an account? <a href="employer-login.html">Login as Employer</a></p>
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About JobHive</h3>
+                <p>JobHive is Kenya's premier job portal connecting youth with employment opportunities.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="jobs.html">Jobs</a></li>
+                    <li><a href="employer.html">For Employers</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 JobHive Kenya. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html> 

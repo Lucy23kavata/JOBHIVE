@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Seeker Registration - JobHive Kenya</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="auth.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-firestore-compat.js"></script>
+    <!-- Custom Scripts -->
+    <script src="firebase.js"></script>
+    <script src="auth.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">JobHive Kenya</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="jobs.html">Jobs</a>
+            <a href="resume.html">Resume Builder</a>
+            <a href="employer.html">For Employers</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="auth-container">
+        <div class="auth-box">
+            <h1>Job Seeker Registration</h1>
+            <form id="jobseekerRegisterForm" class="auth-form">
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" required 
+                           pattern="[A-Za-z\s]{2,}"
+                           title="Please enter your full name (letters and spaces only)">
+                    <div class="error-message" id="nameError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" required 
+                           pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                           title="Please enter a valid email address">
+                    <div class="error-message" id="emailError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required 
+                           minlength="6"
+                           pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}"
+                           title="Password must contain at least one number, one uppercase and lowercase letter, and at least 6 characters">
+                    <div class="error-message" id="passwordError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" required>
+                    <div class="error-message" id="confirmPasswordError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" required 
+                           pattern="[0-9]{10}"
+                           title="Please enter a valid 10-digit phone number">
+                    <div class="error-message" id="phoneError"></div>
+                </div>
+                
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">Create Job Seeker Account</button>
+                <p class="auth-switch">Already have an account? <a href="jobseeker-login.html">Login as Job Seeker</a></p>
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About JobHive</h3>
+                <p>JobHive is Kenya's premier job portal connecting youth with employment opportunities.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="jobs.html">Jobs</a></li>
+                    <li><a href="employer.html">For Employers</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 JobHive Kenya. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html> 

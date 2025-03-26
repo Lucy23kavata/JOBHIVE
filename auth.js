@@ -136,3 +136,163 @@ const addLogoutButton = () => {
 const removeLogoutButton = () => {
     document.getElementById("logoutBtn")?.remove();
 };
+
+// Authentication Functions
+document.addEventListener('DOMContentLoaded', () => {
+    // Get form elements
+    const employerLoginForm = document.getElementById('employerLoginForm');
+    const employerSignupForm = document.getElementById('employerSignupForm');
+
+    // Employer Login Handler
+    if (employerLoginForm) {
+        employerLoginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = employerLoginForm.querySelector('#email').value;
+            const password = employerLoginForm.querySelector('#password').value;
+
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const userDoc = await db.collection('users').doc(userCredential.user.uid).get();
+                
+                if (userDoc.exists && userDoc.data().type === 'employer') {
+                    window.location.href = 'employer.html';
+                } else {
+                    alert('This account is not registered as an employer.');
+                    await auth.signOut();
+                }
+            } catch (error) {
+                alert('Login failed: ' + error.message);
+            }
+        });
+    }
+
+    // Employer Signup Handler
+    if (employerSignupForm) {
+        employerSignupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const companyName = employerSignupForm.querySelector('#companyName').value;
+            const email = employerSignupForm.querySelector('#email').value;
+            const password = employerSignupForm.querySelector('#password').value;
+            const confirmPassword = employerSignupForm.querySelector('#confirmPassword').value;
+            const location = employerSignupForm.querySelector('#location').value;
+            const phone = employerSignupForm.querySelector('#phone').value;
+            const website = employerSignupForm.querySelector('#website').value;
+            const description = employerSignupForm.querySelector('#description').value;
+
+            if (password !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                await db.collection('users').doc(userCredential.user.uid).set({
+                    companyName,
+                    email,
+                    type: 'employer',
+                    location,
+                    phone,
+                    website,
+                    description,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                window.location.href = 'employer.html';
+            } catch (error) {
+                alert('Registration failed: ' + error.message);
+            }
+        });
+    }
+});
+
+// Jobseeker Registration Handler
+document.addEventListener('DOMContentLoaded', function() {
+    const jobseekerRegisterForm = document.getElementById('jobseekerRegisterForm');
+    if (jobseekerRegisterForm) {
+        jobseekerRegisterForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const fullName = document.getElementById('fullName').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const phone = document.getElementById('phone').value;
+            const location = document.getElementById('location').value;
+            const skills = document.getElementById('skills').value;
+            const experience = document.getElementById('experience').value;
+            const education = document.getElementById('education').value;
+
+            // Clear previous errors
+            clearErrors();
+
+            // Validate passwords match
+            if (password !== confirmPassword) {
+                showError('confirmPasswordError', 'Passwords do not match');
+                return;
+            }
+
+            try {
+                // Create user account
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+
+                // Create jobseeker profile in Firestore
+                await setDoc(doc(db, "jobseekers", user.uid), {
+                    fullName,
+                    email,
+                    phone,
+                    location,
+                    skills: skills.split(',').map(skill => skill.trim()),
+                    experience,
+                    education,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // Redirect to jobseeker dashboard
+                window.location.href = 'jobseeker-dashboard.html';
+            } catch (error) {
+                handleAuthError(error);
+            }
+        });
+    }
+});
+
+// Helper function to clear all error messages
+function clearErrors() {
+    const errorElements = document.querySelectorAll('.error-message');
+    errorElements.forEach(element => {
+        element.textContent = '';
+    });
+}
+
+// Helper function to show error message
+function showError(elementId, message) {
+    const errorElement = document.getElementById(elementId);
+    if (errorElement) {
+        errorElement.textContent = message;
+    }
+}
+
+// Helper function to handle authentication errors
+function handleAuthError(error) {
+    let errorMessage = 'An error occurred during registration.';
+    
+    switch (error.code) {
+        case 'auth/email-already-in-use':
+            errorMessage = 'This email is already registered. Please use a different email or login.';
+            showError('emailError', errorMessage);
+            break;
+        case 'auth/invalid-email':
+            errorMessage = 'Please enter a valid email address.';
+            showError('emailError', errorMessage);
+            break;
+        case 'auth/weak-password':
+            errorMessage = 'Password should be at least 6 characters long.';
+            showError('passwordError', errorMessage);
+            break;
+        default:
+            console.error('Registration error:', error);
+            alert(errorMessage);
+    }
+}

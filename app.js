@@ -753,4 +753,214 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Load saved resume when page loads
     loadSavedResume();
+});
+
+// Certificate Upload Handling
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle certificate upload type toggle
+    const certUploadTypes = document.querySelectorAll('input[name="cert-upload-type"]');
+    certUploadTypes.forEach(radio => {
+        radio.addEventListener('change', function() {
+            const container = this.closest('.cert-upload-container');
+            const urlInput = container.querySelector('.cert-url-input');
+            const imageInput = container.querySelector('.cert-image-input');
+            
+            if (this.value === 'url') {
+                urlInput.style.display = 'block';
+                imageInput.style.display = 'none';
+            } else {
+                urlInput.style.display = 'none';
+                imageInput.style.display = 'block';
+            }
+        });
+    });
+
+    // Handle image preview
+    const certImageInputs = document.querySelectorAll('.cert-image');
+    certImageInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            const preview = this.nextElementSibling;
+            const file = this.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Certificate preview">`;
+                    preview.classList.add('has-image');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.innerHTML = '';
+                preview.classList.remove('has-image');
+            }
+        });
+    });
+});
+
+// Update the addNewEntry function to handle certificate upload
+function addNewEntry(containerId, templateId) {
+    const container = document.getElementById(containerId);
+    const template = document.getElementById(templateId).content.cloneNode(true);
+    
+    // Reset certificate upload fields
+    const certUploadContainer = template.querySelector('.cert-upload-container');
+    if (certUploadContainer) {
+        const urlInput = certUploadContainer.querySelector('.cert-url-input');
+        const imageInput = certUploadContainer.querySelector('.cert-image-input');
+        const preview = certUploadContainer.querySelector('.cert-image-preview');
+        
+        urlInput.style.display = 'block';
+        imageInput.style.display = 'none';
+        preview.innerHTML = '';
+        preview.classList.remove('has-image');
+    }
+    
+    container.appendChild(template);
+}
+
+// Update the saveResume function to handle certificate images
+async function saveResume() {
+    // ... existing save logic ...
+    
+    // Handle certificate images
+    const certImages = document.querySelectorAll('.cert-image');
+    for (const imageInput of certImages) {
+        if (imageInput.files.length > 0) {
+            const file = imageInput.files[0];
+            const storageRef = firebase.storage().ref(`certificates/${Date.now()}_${file.name}`);
+            await storageRef.put(file);
+            const url = await storageRef.getDownloadURL();
+            // Store the URL in your resume data
+            // ... 
+        }
+    }
+    
+    // ... rest of save logic ...
+}
+
+// Employer Authentication Functions
+function showWelcomeSection() {
+    document.getElementById('employerWelcome').style.display = 'block';
+    document.querySelector('.employer-dashboard').style.display = 'none';
+}
+
+function showDashboard() {
+    document.getElementById('employerWelcome').style.display = 'none';
+    document.querySelector('.employer-dashboard').style.display = 'block';
+}
+
+function showLoginModal() {
+    document.getElementById('loginModal').style.display = 'block';
+}
+
+function showRegisterModal() {
+    document.getElementById('registerModal').style.display = 'block';
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
+function loadEmployerData(uid) {
+    firebase.firestore().collection('employers').doc(uid).get()
+        .then((doc) => {
+            if (doc.exists) {
+                const data = doc.data();
+                document.getElementById('companyName').textContent = data.companyName;
+                document.getElementById('companyEmail').textContent = data.email;
+            }
+        })
+        .catch((error) => {
+            console.error('Error loading employer data:', error);
+        });
+}
+
+// Initialize employer authentication
+document.addEventListener('DOMContentLoaded', function() {
+    // Check authentication state
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            showDashboard();
+            loadEmployerData(user.uid);
+        } else {
+            showWelcomeSection();
+        }
+    });
+
+    // Add event listeners for login/register buttons
+    document.querySelectorAll('#welcomeLoginBtn, #loginBtn').forEach(btn => {
+        btn.addEventListener('click', showLoginModal);
+    });
+
+    document.querySelectorAll('#welcomeRegisterBtn, #registerBtn').forEach(btn => {
+        btn.addEventListener('click', showRegisterModal);
+    });
+
+    // Handle login form
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const email = this.querySelector('input[type="email"]').value;
+        const password = this.querySelector('input[type="password"]').value;
+
+        firebase.auth().signInWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                closeModal('loginModal');
+                showDashboard();
+                loadEmployerData(userCredential.user.uid);
+            })
+            .catch((error) => {
+                alert('Login failed: ' + error.message);
+            });
+    });
+
+    // Handle register form
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const companyName = this.querySelector('input[type="text"]').value;
+        const email = this.querySelector('input[type="email"]').value;
+        const password = this.querySelector('input[type="password"]').value;
+
+        firebase.auth().createUserWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                return firebase.firestore().collection('employers').doc(userCredential.user.uid).set({
+                    companyName: companyName,
+                    email: email,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            })
+            .then(() => {
+                closeModal('registerModal');
+                showDashboard();
+                loadEmployerData(firebase.auth().currentUser.uid);
+            })
+            .catch((error) => {
+                alert('Registration failed: ' + error.message);
+            });
+    });
+
+    // Handle modal closing
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
+        }
+    };
+
+    document.querySelectorAll('.close').forEach(closeBtn => {
+        closeBtn.onclick = function() {
+            this.closest('.modal').style.display = 'none';
+        }
+    });
+
+    // Switch between login and register modals
+    document.getElementById('showRegister').onclick = function(e) {
+        e.preventDefault();
+        closeModal('loginModal');
+        showRegisterModal();
+    };
+
+    document.getElementById('showLogin').onclick = function(e) {
+        e.preventDefault();
+        closeModal('registerModal');
+        showLoginModal();
+    };
 }); 

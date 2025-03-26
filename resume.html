@@ -20,7 +20,7 @@
             <a href="index.html">Home</a>
             <a href="jobs.html">Jobs</a>
             <a href="resume.html" class="active">Resume Builder</a>
-            <a href="#employer">For Employers</a>
+            <a href="employer.html">For Employers</a>
             <div class="auth-buttons">
                 <button id="loginBtn" class="btn">Login</button>
                 <button id="registerBtn" class="btn">Register</button>
@@ -70,7 +70,76 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="location">Location</label>
-                                <input type="text" id="location" placeholder="City, Country">
+                                <select id="location" required>
+                                    <option value="">Select County</option>
+                                    <option value="Nairobi">Nairobi</option>
+                                    <option value="Mombasa">Mombasa</option>
+                                    <option value="Kisumu">Kisumu</option>
+                                    <option value="Nakuru">Nakuru</option>
+                                    <option value="Eldoret">Eldoret</option>
+                                    <option value="Thika">Thika</option>
+                                    <option value="Kitale">Kitale</option>
+                                    <option value="Malindi">Malindi</option>
+                                    <option value="Kakamega">Kakamega</option>
+                                    <option value="Kisii">Kisii</option>
+                                    <option value="Machakos">Machakos</option>
+                                    <option value="Nyeri">Nyeri</option>
+                                    <option value="Meru">Meru</option>
+                                    <option value="Embu">Embu</option>
+                                    <option value="Kitui">Kitui</option>
+                                    <option value="Garissa">Garissa</option>
+                                    <option value="Mombasa">Mombasa</option>
+                                    <option value="Kilifi">Kilifi</option>
+                                    <option value="Tana River">Tana River</option>
+                                    <option value="Lamu">Lamu</option>
+                                    <option value="Taita Taveta">Taita Taveta</option>
+                                    <option value="Kwale">Kwale</option>
+                                    <option value="Kericho">Kericho</option>
+                                    <option value="Bomet">Bomet</option>
+                                    <option value="Kakamega">Kakamega</option>
+                                    <option value="Vihiga">Vihiga</option>
+                                    <option value="Bungoma">Bungoma</option>
+                                    <option value="Busia">Busia</option>
+                                    <option value="Siaya">Siaya</option>
+                                    <option value="Kisumu">Kisumu</option>
+                                    <option value="Homa Bay">Homa Bay</option>
+                                    <option value="Migori">Migori</option>
+                                    <option value="Kisii">Kisii</option>
+                                    <option value="Nyamira">Nyamira</option>
+                                    <option value="Nakuru">Nakuru</option>
+                                    <option value="Narok">Narok</option>
+                                    <option value="Kajiado">Kajiado</option>
+                                    <option value="Kericho">Kericho</option>
+                                    <option value="Bomet">Bomet</option>
+                                    <option value="Nyeri">Nyeri</option>
+                                    <option value="Kirinyaga">Kirinyaga</option>
+                                    <option value="Murang'a">Murang'a</option>
+                                    <option value="Kiambu">Kiambu</option>
+                                    <option value="Turkana">Turkana</option>
+                                    <option value="West Pokot">West Pokot</option>
+                                    <option value="Samburu">Samburu</option>
+                                    <option value="Trans Nzoia">Trans Nzoia</option>
+                                    <option value="Uasin Gishu">Uasin Gishu</option>
+                                    <option value="Elgeyo/Marakwet">Elgeyo/Marakwet</option>
+                                    <option value="Nandi">Nandi</option>
+                                    <option value="Baringo">Baringo</option>
+                                    <option value="Laikipia">Laikipia</option>
+                                    <option value="Nakuru">Nakuru</option>
+                                    <option value="Narok">Narok</option>
+                                    <option value="Kajiado">Kajiado</option>
+                                    <option value="Kericho">Kericho</option>
+                                    <option value="Bomet">Bomet</option>
+                                    <option value="Kakamega">Kakamega</option>
+                                    <option value="Vihiga">Vihiga</option>
+                                    <option value="Bungoma">Bungoma</option>
+                                    <option value="Busia">Busia</option>
+                                    <option value="Siaya">Siaya</option>
+                                    <option value="Kisumu">Kisumu</option>
+                                    <option value="Homa Bay">Homa Bay</option>
+                                    <option value="Migori">Migori</option>
+                                    <option value="Kisii">Kisii</option>
+                                    <option value="Nyamira">Nyamira</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label for="linkedin">LinkedIn Profile</label>
@@ -194,7 +263,25 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Certificate URL/Image</label>
-                                        <input type="text" class="cert-url" placeholder="URL or upload image">
+                                        <div class="cert-upload-container">
+                                            <div class="cert-upload-options">
+                                                <label class="cert-option">
+                                                    <input type="radio" name="cert-upload-type" value="url" checked>
+                                                    URL
+                                                </label>
+                                                <label class="cert-option">
+                                                    <input type="radio" name="cert-upload-type" value="image">
+                                                    Upload Image
+                                                </label>
+                                            </div>
+                                            <div class="cert-url-input">
+                                                <input type="url" class="cert-url" placeholder="https://certificate-url.com">
+                                            </div>
+                                            <div class="cert-image-input" style="display: none;">
+                                                <input type="file" class="cert-image" accept="image/*">
+                                                <div class="cert-image-preview"></div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -294,7 +381,94 @@
             <div class="resume-preview">
                 <h2>Preview</h2>
                 <div id="resumePreview" class="preview-content">
-                    <!-- Preview content will be dynamically populated here -->
+                    <!-- Personal Information -->
+                    <div class="preview-section">
+                        <h1 id="previewName" class="preview-name">Your Name</h1>
+                        <div class="preview-contact">
+                            <p id="previewEmail"><i class="fas fa-envelope"></i> your.email@example.com</p>
+                            <p id="previewPhone"><i class="fas fa-phone"></i> +254 700 000 000</p>
+                            <p id="previewLocation"><i class="fas fa-map-marker-alt"></i> City, Country</p>
+                            <p id="previewLinkedin"><i class="fab fa-linkedin"></i> linkedin.com/in/yourprofile</p>
+                            <p id="previewWebsite"><i class="fas fa-globe"></i> yourwebsite.com</p>
+                        </div>
+                    </div>
+
+                    <!-- Professional Summary -->
+                    <div class="preview-section">
+                        <h2 class="preview-heading">Professional Summary</h2>
+                        <p id="previewSummary">Write a brief summary of your professional background and career objectives...</p>
+                    </div>
+
+                    <!-- Work Experience -->
+                    <div class="preview-section">
+                        <h2 class="preview-heading">Work Experience</h2>
+                        <div id="previewExperience">
+                            <!-- Experience items will be dynamically added here -->
+                        </div>
+                    </div>
+
+                    <!-- Education -->
+                    <div class="preview-section">
+                        <h2 class="preview-heading">Education</h2>
+                        <div id="previewEducation">
+                            <!-- Education items will be dynamically added here -->
+                        </div>
+                    </div>
+
+                    <!-- Skills -->
+                    <div class="preview-section">
+                        <h2 class="preview-heading">Skills</h2>
+                        <div class="preview-skills">
+                            <div class="preview-skill-category">
+                                <h3>Technical Skills</h3>
+                                <p id="previewTechnicalSkills">JavaScript, Python, React...</p>
+                            </div>
+                            <div class="preview-skill-category">
+                                <h3>Soft Skills</h3>
+                                <p id="previewSoftSkills">Leadership, Communication, Problem Solving...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Certifications -->
+                    <div class="preview-section">
+                        <h2 class="preview-heading">Certifications & Training</h2>
+                        <div id="previewCertifications">
+                            <!-- Certification items will be dynamically added here -->
+                        </div>
+                    </div>
+
+                    <!-- Projects -->
+                    <div class="preview-section">
+                        <h2 class="preview-heading">Projects & Portfolio</h2>
+                        <div id="previewProjects">
+                            <!-- Project items will be dynamically added here -->
+                        </div>
+                    </div>
+
+                    <!-- Achievements -->
+                    <div class="preview-section">
+                        <h2 class="preview-heading">Achievements & Awards</h2>
+                        <div id="previewAchievements">
+                            <!-- Achievement items will be dynamically added here -->
+                        </div>
+                    </div>
+
+                    <!-- References -->
+                    <div class="preview-section">
+                        <h2 class="preview-heading">References</h2>
+                        <div id="previewReferences">
+                            <!-- Reference items will be dynamically added here -->
+                        </div>
+                    </div>
+                            <div class="preview-reference-item">
+                                <h3>Reference Name</h3>
+                                <p class="preview-position">Position</p>
+                                <p class="preview-company">Company</p>
+                                <p class="preview-contact">Contact Information</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

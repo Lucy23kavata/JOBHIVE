@@ -866,17 +866,171 @@ form button {
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 2rem;
-    position: sticky;
-    top: 2rem;
-    height: fit-content;
+    height: 100%;
+    overflow-y: auto;
 }
 
 .preview-content {
-    background: white;
-    padding: 2rem;
-    border: 1px solid #eee;
-    border-radius: 4px;
-    min-height: 800px;
+    max-width: 800px;
+    margin: 0 auto;
+    font-family: 'Arial', sans-serif;
+    color: #333;
+}
+
+.preview-section {
+    margin-bottom: 2rem;
+}
+
+.preview-name {
+    font-size: 2.5rem;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.preview-contact {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    color: #666;
+}
+
+.preview-contact p {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.preview-contact i {
+    color: #007bff;
+}
+
+.preview-heading {
+    color: #2c3e50;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #007bff;
+}
+
+.preview-experience-item,
+.preview-education-item,
+.preview-certification-item,
+.preview-project-item,
+.preview-achievement-item,
+.preview-reference-item {
+    margin-bottom: 1.5rem;
+}
+
+.preview-experience-item h3,
+.preview-education-item h3,
+.preview-certification-item h3,
+.preview-project-item h3,
+.preview-achievement-item h3,
+.preview-reference-item h3 {
+    color: #2c3e50;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.preview-job-title,
+.preview-degree {
+    color: #007bff;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.preview-dates {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.preview-responsibilities,
+.preview-project-description,
+.preview-description {
+    color: #444;
+    line-height: 1.6;
+}
+
+.preview-skills {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.preview-skill-category h3 {
+    color: #2c3e50;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.preview-skill-category p {
+    color: #444;
+    line-height: 1.6;
+}
+
+/* Template-specific styles */
+.template-modern .preview-content {
+    font-family: 'Roboto', sans-serif;
+}
+
+.template-modern .preview-name {
+    color: #1a237e;
+}
+
+.template-modern .preview-heading {
+    color: #1a237e;
+    border-bottom-color: #1a237e;
+}
+
+.template-classic .preview-content {
+    font-family: 'Times New Roman', serif;
+}
+
+.template-classic .preview-name {
+    color: #000;
+}
+
+.template-classic .preview-heading {
+    color: #000;
+    border-bottom-color: #000;
+}
+
+.template-minimal .preview-content {
+    font-family: 'Helvetica Neue', sans-serif;
+}
+
+.template-minimal .preview-name {
+    color: #333;
+}
+
+.template-minimal .preview-heading {
+    color: #333;
+    border-bottom-color: #333;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .preview-content {
+        padding: 1rem;
+    }
+
+    .preview-name {
+        font-size: 2rem;
+    }
+
+    .preview-contact {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .preview-skills {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* Template Styles */
@@ -926,5 +1080,191 @@ form button {
 
     .form-row {
         grid-template-columns: 1fr;
+    }
+}
+
+/* Certificate Upload Styles */
+.cert-upload-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.cert-upload-options {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.cert-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    color: #666;
+    transition: color 0.3s ease;
+}
+
+.cert-option:hover {
+    color: #007bff;
+}
+
+.cert-option input[type="radio"] {
+    margin: 0;
+}
+
+.cert-url-input,
+.cert-image-input {
+    width: 100%;
+}
+
+.cert-image-input {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.cert-image {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 100%;
+}
+
+.cert-image-preview {
+    width: 100%;
+    max-width: 200px;
+    height: 150px;
+    border: 1px dashed #ddd;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background-color: #f8f9fa;
+}
+
+.cert-image-preview img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.cert-image-preview::before {
+    content: 'Preview';
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.cert-image-preview.has-image::before {
+    display: none;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .cert-upload-options {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .cert-image-preview {
+        max-width: 100%;
+    }
+}
+
+/* Employer Welcome Section */
+.employer-welcome {
+    padding: 4rem 2rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    min-height: calc(100vh - 80px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.welcome-content {
+    max-width: 1200px;
+    text-align: center;
+}
+
+.welcome-content h1 {
+    font-size: 2.5rem;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.welcome-content p {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 3rem;
+}
+
+.welcome-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.feature-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+}
+
+.feature-card i {
+    font-size: 2rem;
+    color: #007bff;
+    margin-bottom: 1rem;
+}
+
+.feature-card h3 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.feature-card p {
+    color: #666;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.welcome-cta {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.welcome-cta .btn {
+    padding: 0.8rem 2rem;
+    font-size: 1.1rem;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .employer-welcome {
+        padding: 2rem 1rem;
+    }
+
+    .welcome-content h1 {
+        font-size: 2rem;
+    }
+
+    .welcome-features {
+        grid-template-columns: 1fr;
+    }
+
+    .welcome-cta {
+        flex-direction: column;
+    }
+
+    .welcome-cta .btn {
+        width: 100%;
     }
 } 

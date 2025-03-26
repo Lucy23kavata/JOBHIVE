@@ -244,34 +244,53 @@ async function loadRecentActivity() {
     }
 }
 
-// Initialize Dashboard
-document.addEventListener('DOMContentLoaded', () => {
-    // Check authentication
-    auth.onAuthStateChanged(user => {
-        if (!user) {
+// Check authentication state
+auth.onAuthStateChanged(async (user) => {
+    if (!user) {
+        window.location.href = 'employer.html';
+        return;
+    }
+
+    try {
+        // Check if user is an employer
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        if (!userDoc.exists || userDoc.data().type !== 'employer') {
+            await auth.signOut();
             window.location.href = 'index.html';
             return;
         }
 
-        // Load initial data
-        loadJobs();
-        loadApplications();
-        updateDashboardStats();
-        loadRecentActivity();
+        // Show employer dashboard
+        document.querySelector('.employer-dashboard').style.display = 'block';
+        document.getElementById('employerWelcome').style.display = 'none';
 
-        // Load employer profile
-        db.collection('employers').doc(user.uid).get().then(doc => {
-            if (doc.exists) {
-                const data = doc.data();
-                document.getElementById('companyName').value = data.companyName || '';
-                document.getElementById('industry').value = data.industry || '';
-                document.getElementById('companySize').value = data.companySize || '';
-                document.getElementById('companyDescription').value = data.description || '';
-                document.getElementById('website').value = data.website || '';
-            }
-        });
-    });
+        // Load employer data
+        const employerDoc = await db.collection('employers').doc(user.uid).get();
+        if (employerDoc.exists) {
+            const data = employerDoc.data();
+            document.getElementById('companyName').textContent = data.companyName || 'Company Name';
+            document.getElementById('companyEmail').textContent = data.email || user.email;
+        }
 
+        // Add logout functionality
+        const logoutBtn = document.createElement('button');
+        logoutBtn.className = 'btn logout-btn';
+        logoutBtn.textContent = 'Logout';
+        logoutBtn.onclick = async () => {
+            await auth.signOut();
+            window.location.href = 'employer.html';
+        };
+        document.querySelector('.auth-buttons').innerHTML = '';
+        document.querySelector('.auth-buttons').appendChild(logoutBtn);
+
+    } catch (error) {
+        console.error('Error:', error);
+        window.location.href = 'employer.html';
+    }
+});
+
+// Initialize Dashboard
+document.addEventListener('DOMContentLoaded', () => {
     // Filter event listeners
     jobStatusFilter.addEventListener('change', loadJobs);
     jobSearch.addEventListener('input', loadJobs);

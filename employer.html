@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>For Employers - JobHive Kenya</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="auth.css">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Firebase SDK -->
@@ -12,6 +13,10 @@
     <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-storage-compat.js"></script>
+    <!-- Custom Scripts -->
+    <script src="firebase.js"></script>
+    <script src="auth.js"></script>
+    <script src="app.js"></script>
 </head>
 <body>
     <!-- Navigation -->
@@ -58,7 +63,6 @@
             </div>
             <div class="welcome-cta">
                 <button id="welcomeLoginBtn" class="btn btn-primary">Login to Dashboard</button>
-                <button id="welcomeRegisterBtn" class="btn btn-outline">Register as Employer</button>
             </div>
         </div>
     </section>
@@ -446,11 +450,12 @@
             <span class="close">&times;</span>
             <h2>Register</h2>
             <form id="registerForm">
-                <input type="text" placeholder="Company Name" required>
+                <input type="text" placeholder="Full Name" required>
                 <input type="email" placeholder="Email" required>
                 <input type="password" placeholder="Password" required>
                 <select required>
                     <option value="">Select Account Type</option>
+                    <option value="jobseeker">Job Seeker</option>
                     <option value="employer">Employer</option>
                 </select>
                 <button type="submit" class="btn">Register</button>
@@ -459,6 +464,7 @@
         </div>
     </div>
 
+    <script src="modal.js"></script>
     <script src="app.js"></script>
 </body>
 </html> 

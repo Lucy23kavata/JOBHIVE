@@ -963,4 +963,325 @@ document.addEventListener('DOMContentLoaded', function() {
         closeModal('registerModal');
         showLoginModal();
     };
+});
+
+// Employer Page Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if we're on the employer page
+    if (document.querySelector('.employer-welcome') || document.querySelector('.employer-dashboard')) {
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+        // DOM Elements
+        const welcomeSection = document.getElementById('employerWelcome');
+        const dashboardSection = document.querySelector('.employer-dashboard');
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const welcomeLoginBtn = document.getElementById('welcomeLoginBtn');
+        const welcomeRegisterBtn = document.getElementById('welcomeRegisterBtn');
+        const loginModal = document.getElementById('loginModal');
+        const registerModal = document.getElementById('registerModal');
+        const closeButtons = document.querySelectorAll('.close');
+        const showRegisterLink = document.getElementById('showRegister');
+        const showLoginLink = document.getElementById('showLogin');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const employerMenu = document.querySelector('.employer-menu');
+        const dashboardSections = document.querySelectorAll('.dashboard-section');
+        const postJobForm = document.getElementById('postJobForm');
+        const companyProfileForm = document.getElementById('companyProfileForm');
+        const jobSearch = document.getElementById('jobSearch');
+        const jobStatus = document.getElementById('jobStatus');
+        const jobFilter = document.getElementById('jobFilter');
+        const statusFilter = document.getElementById('statusFilter');
+        const resumeSearch = document.getElementById('resumeSearch');
+        const experienceFilter = document.getElementById('experienceFilter');
+        const educationFilter = document.getElementById('educationFilter');
+        const locationFilter = document.getElementById('locationFilter');
+
+        // Check authentication state
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                showDashboard();
+                loadEmployerData(user.uid);
+            } else {
+                showWelcomeSection();
+            }
+        });
+
+        // Show/Hide Sections
+        function showDashboard() {
+            welcomeSection.style.display = 'none';
+            dashboardSection.style.display = 'block';
+        }
+
+        function showWelcomeSection() {
+            welcomeSection.style.display = 'block';
+            dashboardSection.style.display = 'none';
+        }
+
+        // Modal Functions
+        function showLoginModal() {
+            loginModal.style.display = 'block';
+        }
+
+        function showRegisterModal() {
+            registerModal.style.display = 'block';
+        }
+
+        function closeModal(modal) {
+            modal.style.display = 'none';
+        }
+
+        // Event Listeners for Buttons
+        loginBtn.addEventListener('click', showLoginModal);
+        registerBtn.addEventListener('click', showRegisterModal);
+        welcomeLoginBtn.addEventListener('click', showLoginModal);
+        welcomeRegisterBtn.addEventListener('click', showRegisterModal);
+
+        closeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                closeModal(loginModal);
+                closeModal(registerModal);
+            });
+        });
+
+        showRegisterLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeModal(loginModal);
+            showRegisterModal();
+        });
+
+        showLoginLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeModal(registerModal);
+            showLoginModal();
+        });
+
+        // Login Form Handler
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = loginForm.querySelector('input[type="email"]').value;
+            const password = loginForm.querySelector('input[type="password"]').value;
+
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                closeModal(loginModal);
+            } catch (error) {
+                alert('Login failed: ' + error.message);
+            }
+        });
+
+        // Register Form Handler
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const companyName = registerForm.querySelector('input[type="text"]').value;
+            const email = registerForm.querySelector('input[type="email"]').value;
+            const password = registerForm.querySelector('input[type="password"]').value;
+
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                await db.collection('employers').doc(userCredential.user.uid).set({
+                    companyName,
+                    email,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                closeModal(registerModal);
+            } catch (error) {
+                alert('Registration failed: ' + error.message);
+            }
+        });
+
+        // Dashboard Navigation
+        employerMenu.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = e.target.closest('a').getAttribute('href').substring(1);
+            
+            // Update active states
+            employerMenu.querySelectorAll('a').forEach(link => link.classList.remove('active'));
+            e.target.closest('a').classList.add('active');
+            
+            // Show target section
+            dashboardSections.forEach(section => {
+                section.classList.remove('active');
+                if (section.id === targetId) {
+                    section.classList.add('active');
+                }
+            });
+        });
+
+        // Post Job Form Handler
+        if (postJobForm) {
+            postJobForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const jobData = {
+                    title: document.getElementById('jobTitle').value,
+                    type: document.getElementById('jobType').value,
+                    category: document.getElementById('jobCategory').value,
+                    location: document.getElementById('location').value,
+                    salaryRange: document.getElementById('salaryRange').value,
+                    description: document.getElementById('jobDescription').value,
+                    requirements: document.getElementById('requirements').value,
+                    deadline: document.getElementById('deadline').value,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    status: 'active'
+                };
+
+                try {
+                    await db.collection('jobs').add(jobData);
+                    alert('Job posted successfully!');
+                    postJobForm.reset();
+                } catch (error) {
+                    alert('Failed to post job: ' + error.message);
+                }
+            });
+        }
+
+        // Company Profile Form Handler
+        if (companyProfileForm) {
+            companyProfileForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const user = auth.currentUser;
+                if (!user) return;
+
+                const logoFile = document.getElementById('companyLogo').files[0];
+                let logoUrl = '';
+
+                if (logoFile) {
+                    const storageRef = storage.ref(`company-logos/${user.uid}`);
+                    await storageRef.put(logoFile);
+                    logoUrl = await storageRef.getDownloadURL();
+                }
+
+                const profileData = {
+                    companyName: document.getElementById('companyName').value,
+                    description: document.getElementById('companyDescription').value,
+                    email: document.getElementById('companyEmail').value,
+                    phone: document.getElementById('companyPhone').value,
+                    website: document.getElementById('companyWebsite').value,
+                    address: document.getElementById('companyAddress').value,
+                    logo: logoUrl || document.getElementById('logoPreview').src,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                try {
+                    await db.collection('employers').doc(user.uid).update(profileData);
+                    alert('Profile updated successfully!');
+                } catch (error) {
+                    alert('Failed to update profile: ' + error.message);
+                }
+            });
+        }
+
+        // Load Employer Data
+        async function loadEmployerData(uid) {
+            try {
+                const doc = await db.collection('employers').doc(uid).get();
+                if (doc.exists) {
+                    const data = doc.data();
+                    document.getElementById('companyName').textContent = data.companyName;
+                    document.getElementById('companyEmail').textContent = data.email;
+                    if (data.logo) {
+                        document.getElementById('companyLogo').src = data.logo;
+                        document.getElementById('logoPreview').src = data.logo;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading employer data:', error);
+            }
+        }
+
+        // Job Search and Filtering
+        if (jobSearch) {
+            jobSearch.addEventListener('input', debounce(async (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                const jobsList = document.getElementById('jobsList');
+                const querySnapshot = await db.collection('jobs')
+                    .where('companyId', '==', auth.currentUser.uid)
+                    .get();
+
+                jobsList.innerHTML = '';
+                querySnapshot.forEach(doc => {
+                    const job = doc.data();
+                    if (job.title.toLowerCase().includes(searchTerm) ||
+                        job.description.toLowerCase().includes(searchTerm)) {
+                        jobsList.appendChild(createJobCard(doc.id, job));
+                    }
+                });
+            }, 300));
+        }
+
+        // Resume Search
+        if (resumeSearch) {
+            resumeSearch.addEventListener('input', debounce(async (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                const resumesList = document.getElementById('resumesList');
+                const querySnapshot = await db.collection('resumes')
+                    .where('skills', 'array-contains', searchTerm)
+                    .get();
+
+                resumesList.innerHTML = '';
+                querySnapshot.forEach(doc => {
+                    const resume = doc.data();
+                    resumesList.appendChild(createResumeCard(doc.id, resume));
+                });
+            }, 300));
+        }
+
+        // Utility Functions
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        function createJobCard(id, job) {
+            const card = document.createElement('div');
+            card.className = 'job-card';
+            card.innerHTML = `
+                <div class="job-header">
+                    <h3>${job.title}</h3>
+                    <span class="status ${job.status}">${job.status}</span>
+                </div>
+                <div class="job-details">
+                    <p><strong>Type:</strong> ${job.type}</p>
+                    <p><strong>Location:</strong> ${job.location}</p>
+                    <p><strong>Posted:</strong> ${job.createdAt.toDate().toLocaleDateString()}</p>
+                </div>
+                <div class="job-actions">
+                    <button onclick="editJob('${id}')" class="btn btn-outline">Edit</button>
+                    <button onclick="deleteJob('${id}')" class="btn btn-danger">Delete</button>
+                </div>
+            `;
+            return card;
+        }
+
+        function createResumeCard(id, resume) {
+            const card = document.createElement('div');
+            card.className = 'resume-card';
+            card.innerHTML = `
+                <div class="resume-header">
+                    <h3>${resume.fullName}</h3>
+                    <p>${resume.title}</p>
+                </div>
+                <div class="resume-details">
+                    <p><strong>Experience:</strong> ${resume.experience}</p>
+                    <p><strong>Education:</strong> ${resume.education}</p>
+                    <p><strong>Skills:</strong> ${resume.skills.join(', ')}</p>
+                </div>
+                <div class="resume-actions">
+                    <button onclick="viewResume('${id}')" class="btn btn-primary">View Resume</button>
+                    <button onclick="contactCandidate('${id}')" class="btn btn-outline">Contact</button>
+                </div>
+            `;
+            return card;
+        }
+    }
 }); 

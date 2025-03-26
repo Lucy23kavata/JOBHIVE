@@ -98,7 +98,7 @@ registerForm.addEventListener('submit', async (e) => {
     try {
         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
         const user = userCredential.user;
-        
+
         // Create user document in Firestore
         await db.collection('users').doc(user.uid).set({
             name,
@@ -142,14 +142,14 @@ async function loadJobListings(page = 1, filters = {}) {
         query = query.orderBy('postedAt', 'desc').limit(limit);
 
         const snapshot = await query.get();
-        
+
         if (snapshot.empty) {
             jobListings.innerHTML = '<div class="no-jobs">No jobs found matching your criteria.</div>';
             return;
         }
 
         jobListings.innerHTML = '';
-        
+
         snapshot.forEach(doc => {
             const job = doc.data();
             const jobCard = createJobCard(doc.id, job);
@@ -173,22 +173,22 @@ async function loadJobListings(page = 1, filters = {}) {
 function createJobCard(jobId, job) {
     const card = document.createElement('div');
     card.className = 'job-card';
-    
+
     // Calculate time since posting
     const postedDate = job.postedAt?.toDate() || new Date();
     const timeSincePosted = getTimeSincePosted(postedDate);
-    
+
     // Check if job is expiring soon
     const expiryDate = job.deadline?.toDate();
     const isExpiringSoon = expiryDate && (expiryDate - new Date()) < (7 * 24 * 60 * 60 * 1000);
-    
+
     card.innerHTML = `
         <div class="job-header">
             <div class="company-logo">
-                ${job.companyLogo ? 
-                    `<img src="${job.companyLogo}" alt="${job.companyName} logo">` : 
-                    `<div class="logo-placeholder">${job.companyName.charAt(0)}</div>`
-                }
+                ${job.companyLogo ?
+            `<img src="${job.companyLogo}" alt="${job.companyName} logo">` :
+            `<div class="logo-placeholder">${job.companyName.charAt(0)}</div>`
+        }
             </div>
             <div class="job-title-section">
                 <h3>${job.title}</h3>
@@ -240,27 +240,27 @@ function createJobCard(jobId, job) {
         
         <div class="job-actions">
             <button onclick="viewJob('${jobId}')" class="btn btn-primary">View Details</button>
-            ${job.applyUrl ? 
-                `<a href="${job.applyUrl}" target="_blank" class="btn btn-secondary">Apply Externally</a>` :
-                `<button onclick="applyForJob('${jobId}')" class="btn btn-primary">Apply Now</button>`
-            }
+            ${job.applyUrl ?
+            `<a href="${job.applyUrl}" target="_blank" class="btn btn-secondary">Apply Externally</a>` :
+            `<button onclick="applyForJob('${jobId}')" class="btn btn-primary">Apply Now</button>`
+        }
             <button onclick="saveJob('${jobId}')" class="btn btn-outline">
                 <i class="far fa-bookmark"></i> Save Job
             </button>
         </div>
     `;
-    
+
     return card;
 }
 
 function getTimeSincePosted(date) {
     const now = new Date();
     const diff = now - date;
-    
+
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor(diff / (1000 * 60));
-    
+
     if (days > 0) return `${days} day${days === 1 ? '' : 's'} ago`;
     if (hours > 0) return `${hours} hour${hours === 1 ? '' : 's'} ago`;
     if (minutes > 0) return `${minutes} minute${minutes === 1 ? '' : 's'} ago`;
@@ -278,14 +278,14 @@ async function searchJobs() {
         salaryMin: salaryMinFilter.value,
         salaryMax: salaryMaxFilter.value
     };
-    
+
     await loadJobListings(1, filters);
 }
 
 // Add event listeners for filters
 document.addEventListener('DOMContentLoaded', () => {
     // ... existing code ...
-    
+
     // Add filter event listeners
     jobSearch.addEventListener('input', debounce(searchJobs, 500));
     locationFilter.addEventListener('change', searchJobs);
@@ -294,7 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
     industryFilter.addEventListener('change', searchJobs);
     salaryMinFilter.addEventListener('change', searchJobs);
     salaryMaxFilter.addEventListener('change', searchJobs);
-    
+
     // Initial load
     loadJobListings();
 });
@@ -315,7 +315,7 @@ function debounce(func, wait) {
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     loadJobListings();
-    
+
     // Check authentication state
     auth.onAuthStateChanged(user => {
         if (user) {
@@ -335,7 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function viewJob(jobId) {
     const jobDetailsModal = document.getElementById('jobDetailsModal');
     const jobDetailsContent = document.getElementById('jobDetailsContent');
-    
+
     // Get job details from Firestore
     db.collection('jobs').doc(jobId).get()
         .then(doc => {
@@ -344,10 +344,10 @@ function viewJob(jobId) {
                 jobDetailsContent.innerHTML = `
                     <div class="job-header">
                         <div class="company-logo">
-                            ${job.companyLogo ? 
-                                `<img src="${job.companyLogo}" alt="${job.companyName} logo">` : 
-                                `<div class="logo-placeholder">${job.companyName.charAt(0)}</div>`
-                            }
+                            ${job.companyLogo ?
+                        `<img src="${job.companyLogo}" alt="${job.companyName} logo">` :
+                        `<div class="logo-placeholder">${job.companyName.charAt(0)}</div>`
+                    }
                         </div>
                         <div class="job-title-section">
                             <h3>${job.title}</h3>
@@ -419,7 +419,7 @@ function applyForJob(jobId, jobTitle) {
     const applicationModal = document.getElementById('jobApplicationModal');
     const applicationJobTitle = document.getElementById('applicationJobTitle');
     const jobApplicationForm = document.getElementById('jobApplicationForm');
-    
+
     // Check if user is logged in
     if (!auth.currentUser) {
         alert('Please log in to apply for jobs');
@@ -427,26 +427,26 @@ function applyForJob(jobId, jobTitle) {
         openModal(document.getElementById('loginModal'));
         return;
     }
-    
+
     applicationJobTitle.textContent = jobTitle;
     openModal(applicationModal);
-    
+
     // Handle form submission
     jobApplicationForm.onsubmit = async (e) => {
         e.preventDefault();
-        
+
         const fullName = document.getElementById('fullName').value;
         const email = document.getElementById('email').value;
         const phone = document.getElementById('phone').value;
         const resume = document.getElementById('resume').files[0];
         const coverLetter = document.getElementById('coverLetter').value;
-        
+
         try {
             // Upload resume to Firebase Storage
             const resumeRef = storage.ref(`applications/${jobId}/${auth.currentUser.uid}/${resume.name}`);
             await resumeRef.put(resume);
             const resumeUrl = await resumeRef.getDownloadURL();
-            
+
             // Save application to Firestore
             await db.collection('applications').add({
                 jobId,
@@ -459,11 +459,11 @@ function applyForJob(jobId, jobTitle) {
                 status: 'pending',
                 appliedAt: firebase.firestore.FieldValue.serverTimestamp()
             });
-            
+
             alert('Application submitted successfully!');
             closeModal(applicationModal);
             closeModal(document.getElementById('jobDetailsModal'));
-            
+
             // Reset form
             jobApplicationForm.reset();
         } catch (error) {
@@ -478,10 +478,10 @@ function saveJob(jobId) {
         alert('Please log in to save jobs');
         return;
     }
-    
+
     const userId = auth.currentUser.uid;
     const savedJobsRef = db.collection('users').doc(userId).collection('savedJobs');
-    
+
     savedJobsRef.doc(jobId).get()
         .then(doc => {
             if (doc.exists) {
@@ -497,11 +497,11 @@ function saveJob(jobId) {
                 savedJobsRef.doc(jobId).set({
                     savedAt: firebase.firestore.FieldValue.serverTimestamp()
                 })
-                .then(() => alert('Job saved successfully'))
-                .catch(error => {
-                    console.error('Error saving job:', error);
-                    alert('Error saving job');
-                });
+                    .then(() => alert('Job saved successfully'))
+                    .catch(error => {
+                        console.error('Error saving job:', error);
+                        alert('Error saving job');
+                    });
             }
         })
         .catch(error => {
@@ -518,7 +518,7 @@ function isExpiringSoon(date) {
 }
 
 // Resume Builder Functionality
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Initialize resume data
     let resumeData = {
         personalInfo: {},
@@ -549,12 +549,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function addNewEntry(type) {
         const container = document.getElementById(`${type}Container`);
         const template = container.querySelector(`.${type}-entry`).cloneNode(true);
-        
+
         // Clear input values
         template.querySelectorAll('input, textarea').forEach(input => {
             input.value = '';
         });
-        
+
         container.appendChild(template);
     }
 
@@ -567,13 +567,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function updatePreview() {
         const preview = document.getElementById('resumePreview');
         const template = document.getElementById('templateSelect').value;
-        
+
         // Clear previous preview
         preview.innerHTML = '';
-        
+
         // Add template class
         preview.className = `preview-content template-${template}`;
-        
+
         // Personal Information
         const personalInfo = {
             fullName: document.getElementById('fullName').value,
@@ -583,11 +583,11 @@ document.addEventListener('DOMContentLoaded', function() {
             linkedin: document.getElementById('linkedin').value,
             website: document.getElementById('website').value
         };
-        
+
         // Update resume data
         resumeData.personalInfo = personalInfo;
         resumeData.summary = document.getElementById('summary').value;
-        
+
         // Generate preview HTML
         let previewHTML = `
             <div class="resume-header">
@@ -603,7 +603,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
         `;
-        
+
         // Professional Summary
         if (resumeData.summary) {
             previewHTML += `
@@ -613,7 +613,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
         }
-        
+
         // Work Experience
         const experiences = document.querySelectorAll('.experience-entry');
         if (experiences.length > 0) {
@@ -621,13 +621,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="resume-section">
                     <h2>Work Experience</h2>
                     ${Array.from(experiences).map(exp => {
-                        const company = exp.querySelector('.company-name').value;
-                        const title = exp.querySelector('.job-title').value;
-                        const startDate = exp.querySelector('.start-date').value;
-                        const endDate = exp.querySelector('.end-date').value;
-                        const responsibilities = exp.querySelector('.responsibilities').value;
-                        
-                        return `
+                const company = exp.querySelector('.company-name').value;
+                const title = exp.querySelector('.job-title').value;
+                const startDate = exp.querySelector('.start-date').value;
+                const endDate = exp.querySelector('.end-date').value;
+                const responsibilities = exp.querySelector('.responsibilities').value;
+
+                return `
                             <div class="experience-item">
                                 <h3>${title || 'Job Title'}</h3>
                                 <p class="company">${company || 'Company Name'}</p>
@@ -635,11 +635,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <p class="responsibilities">${responsibilities || 'Responsibilities'}</p>
                             </div>
                         `;
-                    }).join('')}
+            }).join('')}
                 </div>
             `;
         }
-        
+
         // Education
         const education = document.querySelectorAll('.education-entry');
         if (education.length > 0) {
@@ -647,27 +647,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="resume-section">
                     <h2>Education</h2>
                     ${Array.from(education).map(edu => {
-                        const institution = edu.querySelector('.institution').value;
-                        const degree = edu.querySelector('.degree').value;
-                        const startDate = edu.querySelector('.start-date').value;
-                        const endDate = edu.querySelector('.end-date').value;
-                        
-                        return `
+                const institution = edu.querySelector('.institution').value;
+                const degree = edu.querySelector('.degree').value;
+                const startDate = edu.querySelector('.start-date').value;
+                const endDate = edu.querySelector('.end-date').value;
+
+                return `
                             <div class="education-item">
                                 <h3>${degree || 'Degree'}</h3>
                                 <p class="institution">${institution || 'Institution'}</p>
                                 <p class="date">${startDate || 'Start Date'} - ${endDate || 'End Date'}</p>
                             </div>
                         `;
-                    }).join('')}
+            }).join('')}
                 </div>
             `;
         }
-        
+
         // Skills
         const technicalSkills = document.getElementById('technicalSkills').value.split(',').map(s => s.trim()).filter(s => s);
         const softSkills = document.getElementById('softSkills').value.split(',').map(s => s.trim()).filter(s => s);
-        
+
         if (technicalSkills.length > 0 || softSkills.length > 0) {
             previewHTML += `
                 <div class="resume-section">
@@ -691,16 +691,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
         }
-        
+
         // Update preview content
         preview.innerHTML = previewHTML;
     }
-    
+
     // Add input event listeners for live preview
     document.querySelectorAll('input, textarea, select').forEach(input => {
         input.addEventListener('input', updatePreview);
     });
-    
+
     // Save resume
     document.getElementById('saveResume').addEventListener('click', async () => {
         try {
@@ -710,36 +710,36 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Please log in to save your resume');
                 return;
             }
-            
+
             // Save to Firestore
             await firebase.firestore().collection('resumes').doc(user.uid).set({
                 ...resumeData,
                 lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
             });
-            
+
             alert('Resume saved successfully!');
         } catch (error) {
             console.error('Error saving resume:', error);
             alert('Error saving resume. Please try again.');
         }
     });
-    
+
     // Download as PDF
     document.getElementById('downloadPDF').addEventListener('click', () => {
         // Here you would implement PDF generation
         // You can use libraries like html2pdf.js or jsPDF
         alert('PDF download functionality will be implemented soon!');
     });
-    
+
     // Template change handler
     document.getElementById('templateSelect').addEventListener('change', updatePreview);
-    
+
     // Load saved resume if exists
     async function loadSavedResume() {
         try {
             const user = firebase.auth().currentUser;
             if (!user) return;
-            
+
             const doc = await firebase.firestore().collection('resumes').doc(user.uid).get();
             if (doc.exists) {
                 const data = doc.data();
@@ -750,21 +750,21 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error loading saved resume:', error);
         }
     }
-    
+
     // Load saved resume when page loads
     loadSavedResume();
 });
 
 // Certificate Upload Handling
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Handle certificate upload type toggle
     const certUploadTypes = document.querySelectorAll('input[name="cert-upload-type"]');
     certUploadTypes.forEach(radio => {
-        radio.addEventListener('change', function() {
+        radio.addEventListener('change', function () {
             const container = this.closest('.cert-upload-container');
             const urlInput = container.querySelector('.cert-url-input');
             const imageInput = container.querySelector('.cert-image-input');
-            
+
             if (this.value === 'url') {
                 urlInput.style.display = 'block';
                 imageInput.style.display = 'none';
@@ -778,13 +778,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle image preview
     const certImageInputs = document.querySelectorAll('.cert-image');
     certImageInputs.forEach(input => {
-        input.addEventListener('change', function() {
+        input.addEventListener('change', function () {
             const preview = this.nextElementSibling;
             const file = this.files[0];
-            
+
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     preview.innerHTML = `<img src="${e.target.result}" alt="Certificate preview">`;
                     preview.classList.add('has-image');
                 };
@@ -801,27 +801,27 @@ document.addEventListener('DOMContentLoaded', function() {
 function addNewEntry(containerId, templateId) {
     const container = document.getElementById(containerId);
     const template = document.getElementById(templateId).content.cloneNode(true);
-    
+
     // Reset certificate upload fields
     const certUploadContainer = template.querySelector('.cert-upload-container');
     if (certUploadContainer) {
         const urlInput = certUploadContainer.querySelector('.cert-url-input');
         const imageInput = certUploadContainer.querySelector('.cert-image-input');
         const preview = certUploadContainer.querySelector('.cert-image-preview');
-        
+
         urlInput.style.display = 'block';
         imageInput.style.display = 'none';
         preview.innerHTML = '';
         preview.classList.remove('has-image');
     }
-    
+
     container.appendChild(template);
 }
 
 // Update the saveResume function to handle certificate images
 async function saveResume() {
     // ... existing save logic ...
-    
+
     // Handle certificate images
     const certImages = document.querySelectorAll('.cert-image');
     for (const imageInput of certImages) {
@@ -834,7 +834,7 @@ async function saveResume() {
             // ... 
         }
     }
-    
+
     // ... rest of save logic ...
 }
 
@@ -876,9 +876,9 @@ function loadEmployerData(uid) {
 }
 
 // Initialize employer authentication
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Check authentication state
-    firebase.auth().onAuthStateChanged(function(user) {
+    firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
             showDashboard();
             loadEmployerData(user.uid);
@@ -897,7 +897,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Handle login form
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
+    document.getElementById('loginForm').addEventListener('submit', function (e) {
         e.preventDefault();
         const email = this.querySelector('input[type="email"]').value;
         const password = this.querySelector('input[type="password"]').value;
@@ -914,7 +914,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Handle register form
-    document.getElementById('registerForm').addEventListener('submit', function(e) {
+    document.getElementById('registerForm').addEventListener('submit', function (e) {
         e.preventDefault();
         const companyName = this.querySelector('input[type="text"]').value;
         const email = this.querySelector('input[type="email"]').value;
@@ -939,26 +939,26 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Handle modal closing
-    window.onclick = function(event) {
+    window.onclick = function (event) {
         if (event.target.classList.contains('modal')) {
             event.target.style.display = 'none';
         }
     };
 
     document.querySelectorAll('.close').forEach(closeBtn => {
-        closeBtn.onclick = function() {
+        closeBtn.onclick = function () {
             this.closest('.modal').style.display = 'none';
         }
     });
 
     // Switch between login and register modals
-    document.getElementById('showRegister').onclick = function(e) {
+    document.getElementById('showRegister').onclick = function (e) {
         e.preventDefault();
         closeModal('loginModal');
         showRegisterModal();
     };
 
-    document.getElementById('showLogin').onclick = function(e) {
+    document.getElementById('showLogin').onclick = function (e) {
         e.preventDefault();
         closeModal('registerModal');
         showLoginModal();
@@ -966,7 +966,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Employer Page Functionality
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Check if we're on the employer page
     if (document.querySelector('.employer-welcome') || document.querySelector('.employer-dashboard')) {
         const auth = firebase.auth();
@@ -1097,11 +1097,11 @@ document.addEventListener('DOMContentLoaded', function() {
         employerMenu.addEventListener('click', (e) => {
             e.preventDefault();
             const targetId = e.target.closest('a').getAttribute('href').substring(1);
-            
+
             // Update active states
             employerMenu.querySelectorAll('a').forEach(link => link.classList.remove('active'));
             e.target.closest('a').classList.add('active');
-            
+
             // Show target section
             dashboardSections.forEach(section => {
                 section.classList.remove('active');

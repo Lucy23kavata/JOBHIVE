@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resume Builder - JobHive Kenya</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="resume.css">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Firebase SDK -->
@@ -12,6 +13,22 @@
     <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-storage-compat.js"></script>
+    <script>
+        // Check authentication and user type
+        auth.onAuthStateChanged(async (user) => {
+            if (!user) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Check if user is a jobseeker
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            if (!userDoc.exists || userDoc.data().type !== 'jobseeker') {
+                window.location.href = 'index.html';
+                return;
+            }
+        });
+    </script>
 </head>
 <body>
     <nav class="navbar">

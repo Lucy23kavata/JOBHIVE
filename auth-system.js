@@ -189,20 +189,35 @@ registerForm.addEventListener('submit', async (e) => {
 });
 
 // Check Authentication State
-auth.onAuthStateChanged(user => {
+auth.onAuthStateChanged(async (user) => {
     if (user) {
         // User is signed in
         const loginBtn = document.getElementById('loginBtn');
         const registerBtn = document.getElementById('registerBtn');
         if (loginBtn) loginBtn.style.display = 'none';
         if (registerBtn) registerBtn.style.display = 'none';
-        // Add logout button
+        
+        // Add welcome message and logout button
         const authButtons = document.querySelector('.auth-buttons');
-        if (authButtons && !authButtons.querySelector('.logout-btn')) {
+        if (authButtons && !authButtons.querySelector('.welcome-message')) {
+            // Get user data
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            if (userDoc.exists) {
+                const userData = userDoc.data();
+                const welcomeMessage = document.createElement('span');
+                welcomeMessage.className = 'welcome-message';
+                welcomeMessage.textContent = `Welcome, ${userData.name}`;
+                authButtons.insertBefore(welcomeMessage, authButtons.firstChild);
+            }
+            
+            // Add logout button
             const logoutBtn = document.createElement('button');
             logoutBtn.className = 'btn logout-btn';
             logoutBtn.textContent = 'Logout';
-            logoutBtn.onclick = () => auth.signOut();
+            logoutBtn.onclick = async () => {
+                await auth.signOut();
+                window.location.reload(); // Reload page after logout
+            };
             authButtons.appendChild(logoutBtn);
         }
     } else {
@@ -211,7 +226,30 @@ auth.onAuthStateChanged(user => {
         const registerBtn = document.getElementById('registerBtn');
         if (loginBtn) loginBtn.style.display = 'block';
         if (registerBtn) registerBtn.style.display = 'block';
+        
+        // Remove welcome message and logout button
+        const welcomeMessage = document.querySelector('.welcome-message');
+        if (welcomeMessage) welcomeMessage.remove();
         const logoutBtn = document.querySelector('.logout-btn');
         if (logoutBtn) logoutBtn.remove();
+        
+        // Clear forms
+        if (loginForm) loginForm.reset();
+        if (registerForm) registerForm.reset();
     }
+});
+
+// Add form clearing when switching between login and register
+document.getElementById('showRegister')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (loginForm) loginForm.reset();
+    closeLoginModal();
+    openRegisterModal();
+});
+
+document.getElementById('showLogin')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (registerForm) registerForm.reset();
+    closeRegisterModal();
+    openLoginModal();
 }); 

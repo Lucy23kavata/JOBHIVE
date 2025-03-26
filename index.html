@@ -33,7 +33,7 @@
             <p>Connect with top employers and opportunities tailored for Kenyan youth</p>
             <div class="hero-buttons">
                 <a href="jobs.html" class="btn btn-primary">Browse Jobs</a>
-                <a href="#resume-builder" class="btn btn-outline">Create Resume</a>
+                <a href="resume.html"  class="btn btn-outline">Create Resume</a>
             </div>
         </section>
 
@@ -127,16 +127,11 @@
     <div id="registerModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2>Register</h2>
+            <h2>Register as Job Seeker</h2>
             <form id="registerForm">
                 <input type="text" placeholder="Full Name" required>
                 <input type="email" placeholder="Email" required>
                 <input type="password" placeholder="Password" required>
-                <select required>
-                    <option value="">Select Account Type</option>
-                    <option value="jobseeker">Job Seeker</option>
-                    <option value="employer">Employer</option>
-                </select>
                 <button type="submit" class="btn">Register</button>
                 <p>Already have an account? <a href="#" id="showLogin">Login</a></p>
             </form>
@@ -144,5 +139,30 @@
     </div>
 
     <script src="app.js"></script>
+    <script>
+        // Handle resume builder button click
+        document.getElementById('resumeBuilderBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            const user = auth.currentUser;
+            
+            if (!user) {
+                // If not logged in, show login modal
+                const loginModal = document.getElementById('loginModal');
+                if (loginModal) {
+                    loginModal.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                }
+                return;
+            }
+            
+            // Check if user is a jobseeker
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            if (userDoc.exists && userDoc.data().type === 'jobseeker') {
+                window.location.href = 'resume.html';
+            } else {
+                alert('Only job seekers can create resumes.');
+            }
+        });
+    </script>
 </body>
 </html> 

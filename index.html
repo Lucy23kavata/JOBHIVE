@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobHive - Kenyan Youth Job Portal</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-storage-compat.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">JobHive Kenya</div>
+        <div class="nav-links">
+            <a href="index.html" class="active">Home</a>
+            <a href="jobs.html">Jobs</a>
+            <a href="resume.html">Resume Builder</a>
+            <a href="#employer">For Employers</a>
+            <div class="auth-buttons">
+                <button id="loginBtn" class="btn">Login</button>
+                <button id="registerBtn" class="btn">Register</button>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>Find Your <span class="blue">Dream Job</span><span class="country">in Kenya</span></h1>
+            <p>Connect with top employers and opportunities tailored for Kenyan youth</p>
+            <div class="hero-buttons">
+                <a href="jobs.html" class="btn btn-primary">Browse Jobs</a>
+                <a href="#resume-builder" class="btn btn-outline">Create Resume</a>
+            </div>
+        </section>
+
+        <!-- Job Categories -->
+        <section class="categories">
+            <h2>Popular Categories</h2>
+            <div class="category-grid">
+                <a href="jobs.html?type=entry-level" class="category-card">
+                    <h3>Entry Level</h3>
+                    <p>Start your career journey</p>
+                </a>
+                <a href="jobs.html?type=internship" class="category-card">
+                    <h3>Internships</h3>
+                    <p>Gain valuable experience</p>
+                </a>
+                <a href="jobs.html?type=part-time" class="category-card">
+                    <h3>Part Time</h3>
+                    <p>Flexible work options</p>
+                </a>
+                <a href="jobs.html?type=freelance" class="category-card">
+                    <h3>Freelance</h3>
+                    <p>Work on your own terms</p>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About JobHive</h3>
+                <p>JobHive is Kenya's premier job portal connecting youth with employment opportunities. We focus on entry-level positions, internships, and part-time work to help young professionals start their careers.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#jobs">Find Jobs</a></li>
+                    <li><a href="#resume-builder">Resume Builder</a></li>
+                    <li><a href="#employer">For Employers</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Popular Locations</h3>
+                <ul>
+                    <li><a href="#">Nairobi</a></li>
+                    <li><a href="#">Mombasa</a></li>
+                    <li><a href="#">Kisumu</a></li>
+                    <li><a href="#">Nakuru</a></li>
+                    <li><a href="#">Eldoret</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Info</h3>
+                <ul>
+                    <li>Email: info@jobhive.co.ke</li>
+                    <li>Phone: +254 700 000 000</li>
+                    <li>Address: Westlands, Nairobi</li>
+                    <li>Working Hours: Mon-Fri 9AM-5PM</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 JobHive Kenya. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Login</h2>
+            <form id="loginForm">
+                <input type="email" placeholder="Email" required>
+                <input type="password" placeholder="Password" required>
+                <button type="submit" class="btn">Login</button>
+                <p>Don't have an account? <a href="#" id="showRegister">Register</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Register</h2>
+            <form id="registerForm">
+                <input type="text" placeholder="Full Name" required>
+                <input type="email" placeholder="Email" required>
+                <input type="password" placeholder="Password" required>
+                <select required>
+                    <option value="">Select Account Type</option>
+                    <option value="jobseeker">Job Seeker</option>
+                    <option value="employer">Employer</option>
+                </select>
+                <button type="submit" class="btn">Register</button>
+                <p>Already have an account? <a href="#" id="showLogin">Login</a></p>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html> 

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Seeker Dashboard - JobHive</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-storage-compat.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="logo">JobHive</div>
+            <ul class="nav-links">
+                <li><a href="#" class="active" data-section="overview">Overview</a></li>
+                <li><a href="#" data-section="search-jobs">Search Jobs</a></li>
+                <li><a href="#" data-section="my-applications">My Applications</a></li>
+                <li><a href="#" data-section="resume-builder">Resume Builder</a></li>
+                <li><a href="#" data-section="profile">Profile</a></li>
+                <li><a href="#" id="logoutBtn">Logout</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Overview Section -->
+            <section id="overview" class="dashboard-section active">
+                <h2>Dashboard Overview</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Applications Sent</h3>
+                        <p id="applicationsSent">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Shortlisted</h3>
+                        <p id="shortlistedCount">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Profile Views</h3>
+                        <p id="profileViews">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Saved Jobs</h3>
+                        <p id="savedJobsCount">0</p>
+                    </div>
+                </div>
+                <div class="recent-activity">
+                    <h3>Recent Activity</h3>
+                    <div id="recentActivityList"></div>
+                </div>
+            </section>
+
+            <!-- Search Jobs Section -->
+            <section id="search-jobs" class="dashboard-section">
+                <h2>Search Jobs</h2>
+                <div class="search-filters">
+                    <input type="text" id="jobSearch" placeholder="Search by title, company, or location">
+                    <select id="jobTypeFilter">
+                        <option value="">All Types</option>
+                        <option value="full-time">Full Time</option>
+                        <option value="part-time">Part Time</option>
+                        <option value="internship">Internship</option>
+                        <option value="freelance">Freelance</option>
+                    </select>
+                    <select id="locationFilter">
+                        <option value="">All Locations</option>
+                        <option value="nairobi">Nairobi</option>
+                        <option value="mombasa">Mombasa</option>
+                        <option value="kisumu">Kisumu</option>
+                    </select>
+                    <select id="educationFilter">
+                        <option value="">All Education Levels</option>
+                        <option value="high-school">High School</option>
+                        <option value="diploma">Diploma</option>
+                        <option value="bachelors">Bachelor's Degree</option>
+                        <option value="masters">Master's Degree</option>
+                    </select>
+                </div>
+                <div id="searchResults" class="jobs-list"></div>
+            </section>
+
+            <!-- My Applications Section -->
+            <section id="my-applications" class="dashboard-section">
+                <h2>My Applications</h2>
+                <div class="application-filters">
+                    <select id="applicationStatusFilter">
+                        <option value="all">All Applications</option>
+                        <option value="pending">Pending</option>
+                        <option value="reviewed">Reviewed</option>
+                        <option value="shortlisted">Shortlisted</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+                <div id="myApplicationsList" class="applications-list"></div>
+            </section>
+
+            <!-- Resume Builder Section -->
+            <section id="resume-builder" class="dashboard-section">
+                <h2>Resume Builder</h2>
+                <form id="resumeForm" class="resume-form">
+                    <div class="form-section">
+                        <h3>Personal Information</h3>
+                        <div class="form-group">
+                            <label for="fullName">Full Name</label>
+                            <input type="text" id="fullName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone</label>
+                            <input type="tel" id="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="location">Location</label>
+                            <input type="text" id="location" required>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Education</h3>
+                        <div id="educationList">
+                            <div class="education-item">
+                                <div class="form-group">
+                                    <label>Institution</label>
+                                    <input type="text" name="institution" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Degree</label>
+                                    <input type="text" name="degree" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Year</label>
+                                    <input type="text" name="year" required>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn" onclick="addEducation()">Add Education</button>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Experience</h3>
+                        <div id="experienceList">
+                            <div class="experience-item">
+                                <div class="form-group">
+                                    <label>Company</label>
+                                    <input type="text" name="company" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Position</label>
+                                    <input type="text" name="position" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Duration</label>
+                                    <input type="text" name="duration" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    <textarea name="description" required></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn" onclick="addExperience()">Add Experience</button>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Skills</h3>
+                        <div class="form-group">
+                            <label for="skills">Skills (comma-separated)</label>
+                            <input type="text" id="skills" placeholder="e.g., JavaScript, Python, Project Management">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn">Generate Resume</button>
+                </form>
+            </section>
+
+            <!-- Profile Section -->
+            <section id="profile" class="dashboard-section">
+                <h2>My Profile</h2>
+                <form id="profileForm" class="profile-form">
+                    <div class="form-group">
+                        <label for="profilePicture">Profile Picture</label>
+                        <input type="file" id="profilePicture" accept="image/*">
+                    </div>
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone</label>
+                        <input type="tel" id="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        <input type="text" id="location" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bio">Bio</label>
+                        <textarea id="bio" rows="4"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="skills">Skills</label>
+                        <input type="text" id="skills" placeholder="e.g., JavaScript, Python, Project Management">
+                    </div>
+                    <div class="form-group">
+                        <label for="resume">Resume</label>
+                        <input type="file" id="resume" accept=".pdf,.doc,.docx">
+                    </div>
+                    <button type="submit" class="btn">Update Profile</button>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About JobHive</h3>
+                <p>JobHive is Kenya's premier job portal connecting youth with employment opportunities. We focus on entry-level positions, internships, and part-time work to help young professionals start their careers.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="#">Search Jobs</a></li>
+                    <li><a href="#">My Applications</a></li>
+                    <li><a href="#">Resume Builder</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Popular Locations</h3>
+                <ul>
+                    <li><a href="#">Nairobi</a></li>
+                    <li><a href="#">Mombasa</a></li>
+                    <li><a href="#">Kisumu</a></li>
+                    <li><a href="#">Nakuru</a></li>
+                    <li><a href="#">Eldoret</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Info</h3>
+                <ul>
+                    <li>Email: info@jobhive.co.ke</li>
+                    <li>Phone: +254 700 000 000</li>
+                    <li>Address: Westlands, Nairobi</li>
+                    <li>Working Hours: Mon-Fri 9AM-5PM</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 JobHive Kenya. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="jobseeker-dashboard.js"></script>
+</body>
+</html> 

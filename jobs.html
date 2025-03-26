@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Listings - JobHive Kenya</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-storage-compat.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">JobHive Kenya</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="jobs.html" class="active">Jobs</a>
+            <a href="resume.html">Resume Builder</a>
+            <a href="#employer">For Employers</a>
+            <div class="auth-buttons">
+                <button id="loginBtn" class="btn">Login</button>
+                <button id="registerBtn" class="btn">Register</button>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Job Search Section -->
+        <section class="job-search">
+            <h1>Find Your Dream Job</h1>
+            <div class="search-box">
+                <input type="text" id="jobSearch" placeholder="Search jobs by title, company, or location">
+                <button class="search-btn">Search</button>
+            </div>
+        </section>
+
+        <!-- Job Filters -->
+        <section class="job-filters-section">
+            <div class="job-filters">
+                <input type="text" id="jobSearch" placeholder="Search jobs...">
+                <select id="locationFilter">
+                    <option value="">All Locations</option>
+                    <option value="nairobi">Nairobi</option>
+                    <option value="mombasa">Mombasa</option>
+                    <option value="kisumu">Kisumu</option>
+                    <option value="nakuru">Nakuru</option>
+                    <option value="eldoret">Eldoret</option>
+                    <option value="thika">Thika</option>
+                    <option value="malindi">Malindi</option>
+                    <option value="kitale">Kitale</option>
+                    <option value="garissa">Garissa</option>
+                    <option value="kakamega">Kakamega</option>
+                    <option value="bomet">Bomet</option>
+                    <option value="baringo">Baringo</option>
+                    <option value="busia">Busia</option>
+                    <option value="embu">Embu</option>
+                    <option value="homa-bay">Homa Bay</option>
+                    <option value="isiolo">Isiolo</option>
+                    <option value="kajiado">Kajiado</option>
+                    <option value="kericho">Kericho</option>
+                    <option value="kiambu">Kiambu</option>
+                    <option value="kilifi">Kilifi</option>
+                    <option value="kirinyaga">Kirinyaga</option>
+                    <option value="kisii">Kisii</option>
+                    <option value="kitui">Kitui</option>
+                    <option value="kwale">Kwale</option>
+                    <option value="laikipia">Laikipia</option>
+                    <option value="lamu">Lamu</option>
+                    <option value="machakos">Machakos</option>
+                    <option value="makueni">Makueni</option>
+                    <option value="mandera">Mandera</option>
+                    <option value="meru">Meru</option>
+                    <option value="migori">Migori</option>
+                    <option value="marsabit">Marsabit</option>
+                    <option value="murang'a">Murang'a</option>
+                    <option value="nandi">Nandi</option>
+                    <option value="narok">Narok</option>
+                    <option value="nyamira">Nyamira</option>
+                    <option value="nyandarua">Nyandarua</option>
+                    <option value="nyeri">Nyeri</option>
+                    <option value="samburu">Samburu</option>
+                    <option value="siaya">Siaya</option>
+                    <option value="taita-taveta">Taita Taveta</option>
+                    <option value="tana-river">Tana River</option>
+                    <option value="trans-nzoia">Trans Nzoia</option>
+                    <option value="turkana">Turkana</option>
+                    <option value="uasin-gishu">Uasin Gishu</option>
+                    <option value="vihiga">Vihiga</option>
+                    <option value="wajir">Wajir</option>
+                    <option value="west-pokot">West Pokot</option>
+                </select>
+                <select id="typeFilter">
+                    <option value="">All Types</option>
+                    <option value="full-time">Full Time</option>
+                    <option value="part-time">Part Time</option>
+                    <option value="internship">Internship</option>
+                    <option value="freelance">Freelance</option>
+                </select>
+                <select id="educationFilter">
+                    <option value="">All Education Levels</option>
+                    <option value="high-school">High School</option>
+                    <option value="diploma">Diploma</option>
+                    <option value="bachelors">Bachelor's Degree</option>
+                    <option value="masters">Master's Degree</option>
+                </select>
+                <select id="industryFilter">
+                    <option value="">All Industries</option>
+                    <option value="it">IT & Software</option>
+                    <option value="finance">Finance & Banking</option>
+                    <option value="marketing">Marketing & Sales</option>
+                    <option value="healthcare">Healthcare</option>
+                    <option value="education">Education</option>
+                    <option value="engineering">Engineering</option>
+                    <option value="retail">Retail</option>
+                    <option value="manufacturing">Manufacturing</option>
+                    <option value="agriculture">Agriculture</option>
+                    <option value="other">Other</option>
+                </select>
+                <div class="salary-range">
+                    <input type="number" id="salaryMinFilter" placeholder="Min Salary">
+                    <input type="number" id="salaryMaxFilter" placeholder="Max Salary">
+                </div>
+            </div>
+        </section>
+
+        <!-- Job Listings -->
+        <section class="job-listings-section">
+            <div id="jobListings" class="job-listings">
+                <!-- Static Job Listings -->
+                <div class="job-card">
+                    <div class="job-header">
+                        <div class="company-logo">
+                            <div class="logo-placeholder">T</div>
+                        </div>
+                        <div class="job-title-section">
+                            <h3>Software Developer</h3>
+                            <div class="company-name">Tech Solutions Ltd</div>
+                            <div class="job-meta">
+                                <span><i class="fas fa-map-marker-alt"></i> Nairobi</span>
+                                <span><i class="fas fa-briefcase"></i> Full Time</span>
+                                <span><i class="fas fa-graduation-cap"></i> Bachelor's Degree</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="job-details">
+                        <div class="description">
+                            <h4>Job Description</h4>
+                            <p>We are looking for a talented Software Developer to join our team. The ideal candidate will have strong programming skills and experience with modern web technologies.</p>
+                        </div>
+                        <div class="requirements">
+                            <h4>Requirements</h4>
+                            <ul>
+                                <li>2+ years of experience in web development</li>
+                                <li>Proficiency in JavaScript, React, and Node.js</li>
+                                <li>Experience with databases and API development</li>
+                                <li>Strong problem-solving skills</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="job-info">
+                        <div class="info-item">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <span>KSh 80,000 - 120,000</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-clock"></i>
+                            <span>Posted 2 days ago</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Deadline: 30 Apr 2024</span>
+                        </div>
+                    </div>
+                    <div class="job-actions">
+                        <button class="btn btn-primary">View Details</button>
+                        <button class="btn btn-outline">Save Job</button>
+                    </div>
+                </div>
+
+                <div class="job-card">
+                    <div class="job-header">
+                        <div class="company-logo">
+                            <div class="logo-placeholder">F</div>
+                        </div>
+                        <div class="job-title-section">
+                            <h3>Marketing Intern</h3>
+                            <div class="company-name">Future Brands Kenya</div>
+                            <div class="job-meta">
+                                <span><i class="fas fa-map-marker-alt"></i> Mombasa</span>
+                                <span><i class="fas fa-briefcase"></i> Internship</span>
+                                <span><i class="fas fa-graduation-cap"></i> Diploma</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="job-details">
+                        <div class="description">
+                            <h4>Job Description</h4>
+                            <p>Join our marketing team as an intern and gain hands-on experience in digital marketing, content creation, and brand management.</p>
+                        </div>
+                        <div class="requirements">
+                            <h4>Requirements</h4>
+                            <ul>
+                                <li>Currently pursuing or completed Diploma in Marketing</li>
+                                <li>Basic understanding of social media marketing</li>
+                                <li>Creative writing skills</li>
+                                <li>Team player with good communication skills</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="job-info">
+                        <div class="info-item">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <span>KSh 15,000 - 20,000</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-clock"></i>
+                            <span>Posted 1 week ago</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Deadline: 15 May 2024</span>
+                        </div>
+                    </div>
+                    <div class="job-actions">
+                        <button class="btn btn-primary">View Details</button>
+                        <button class="btn btn-outline">Save Job</button>
+                    </div>
+                </div>
+
+                <div class="job-card">
+                    <div class="job-header">
+                        <div class="company-logo">
+                            <div class="logo-placeholder">E</div>
+                        </div>
+                        <div class="job-title-section">
+                            <h3>Sales Representative</h3>
+                            <div class="company-name">Eco Products Ltd</div>
+                            <div class="job-meta">
+                                <span><i class="fas fa-map-marker-alt"></i> Kisumu</span>
+                                <span><i class="fas fa-briefcase"></i> Part Time</span>
+                                <span><i class="fas fa-graduation-cap"></i> High School</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="job-details">
+                        <div class="description">
+                            <h4>Job Description</h4>
+                            <p>We are seeking a motivated Sales Representative to promote our eco-friendly products in the Kisumu region.</p>
+                        </div>
+                        <div class="requirements">
+                            <h4>Requirements</h4>
+                            <ul>
+                                <li>High school diploma or equivalent</li>
+                                <li>Previous sales experience preferred</li>
+                                <li>Excellent communication skills</li>
+                                <li>Self-motivated and target-driven</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="job-info">
+                        <div class="info-item">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <span>KSh 25,000 + Commission</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-clock"></i>
+                            <span>Posted 3 days ago</span>
+                        </div>
+                        <div class="info-item expiring-soon">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Deadline: 25 Apr 2024</span>
+                        </div>
+                    </div>
+                    <div class="job-actions">
+                        <button class="btn btn-primary">View Details</button>
+                        <button class="btn btn-outline">Save Job</button>
+                    </div>
+                </div>
+
+                <div class="job-card">
+                    <div class="job-header">
+                        <div class="company-logo">
+                            <div class="logo-placeholder">A</div>
+                        </div>
+                        <div class="job-title-section">
+                            <h3>Content Writer</h3>
+                            <div class="company-name">AgriTech Solutions</div>
+                            <div class="job-meta">
+                                <span><i class="fas fa-map-marker-alt"></i> Remote</span>
+                                <span><i class="fas fa-briefcase"></i> Freelance</span>
+                                <span><i class="fas fa-graduation-cap"></i> Bachelor's Degree</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="job-details">
+                        <div class="description">
+                            <h4>Job Description</h4>
+                            <p>Looking for a skilled content writer to create engaging articles about agricultural technology and farming practices.</p>
+                        </div>
+                        <div class="requirements">
+                            <h4>Requirements</h4>
+                            <ul>
+                                <li>Bachelor's degree in Journalism or related field</li>
+                                <li>Experience in technical writing</li>
+                                <li>Knowledge of agriculture sector</li>
+                                <li>SEO writing experience</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="job-info">
+                        <div class="info-item">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <span>KSh 500 - 1000 per article</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-clock"></i>
+                            <span>Posted 5 days ago</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Deadline: 10 May 2024</span>
+                        </div>
+                    </div>
+                    <div class="job-actions">
+                        <button class="btn btn-primary">View Details</button>
+                        <button class="btn btn-outline">Save Job</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Job Details Modal -->
+    <div id="jobDetailsModal" class="modal">
+        <div class="modal-content job-details-content">
+            <span class="close">&times;</span>
+            <div id="jobDetailsContent">
+                <!-- Job details will be dynamically populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Job Application Modal -->
+    <div id="jobApplicationModal" class="modal">
+        <div class="modal-content application-content">
+            <span class="close">&times;</span>
+            <h2>Apply for <span id="applicationJobTitle"></span></h2>
+            <form id="jobApplicationForm">
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="resume">Resume/CV</label>
+                    <input type="file" id="resume" accept=".pdf,.doc,.docx" required>
+                </div>
+                <div class="form-group">
+                    <label for="coverLetter">Cover Letter</label>
+                    <textarea id="coverLetter" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit Application</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About JobHive</h3>
+                <p>JobHive is Kenya's premier job portal connecting youth with employment opportunities. We focus on entry-level positions, internships, and part-time work to help young professionals start their careers.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#jobs">Find Jobs</a></li>
+                    <li><a href="#resume-builder">Resume Builder</a></li>
+                    <li><a href="#employer">For Employers</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Popular Locations</h3>
+                <ul>
+                    <li><a href="#">Nairobi</a></li>
+                    <li><a href="#">Mombasa</a></li>
+                    <li><a href="#">Kisumu</a></li>
+                    <li><a href="#">Nakuru</a></li>
+                    <li><a href="#">Eldoret</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Info</h3>
+                <ul>
+                    <li>Email: info@jobhive.co.ke</li>
+                    <li>Phone: +254 700 000 000</li>
+                    <li>Address: Westlands, Nairobi</li>
+                    <li>Working Hours: Mon-Fri 9AM-5PM</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 JobHive Kenya. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Login</h2>
+            <form id="loginForm">
+                <input type="email" placeholder="Email" required>
+                <input type="password" placeholder="Password" required>
+                <button type="submit" class="btn">Login</button>
+                <p>Don't have an account? <a href="#" id="showRegister">Register</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Register</h2>
+            <form id="registerForm">
+                <input type="text" placeholder="Full Name" required>
+                <input type="email" placeholder="Email" required>
+                <input type="password" placeholder="Password" required>
+                <select required>
+                    <option value="">Select Account Type</option>
+                    <option value="jobseeker">Job Seeker</option>
+                    <option value="employer">Employer</option>
+                </select>
+                <button type="submit" class="btn">Register</button>
+                <p>Already have an account? <a href="#" id="showLogin">Login</a></p>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html> 

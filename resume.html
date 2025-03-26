@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Builder - JobHive Kenya</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-storage-compat.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">JobHive Kenya</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="jobs.html">Jobs</a>
+            <a href="resume.html" class="active">Resume Builder</a>
+            <a href="#employer">For Employers</a>
+            <div class="auth-buttons">
+                <button id="loginBtn" class="btn">Login</button>
+                <button id="registerBtn" class="btn">Register</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="resume-builder">
+        <div class="resume-container">
+            <!-- Resume Editor Section -->
+            <div class="resume-editor">
+                <div class="editor-header">
+                    <h1>Resume Builder</h1>
+                    <div class="editor-actions">
+                        <button id="saveResume" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save
+                        </button>
+                        <button id="downloadPDF" class="btn btn-primary">
+                            <i class="fas fa-download"></i> Download PDF
+                        </button>
+                        <select id="templateSelect" class="template-select">
+                            <option value="modern">Modern Template</option>
+                            <option value="classic">Classic Template</option>
+                            <option value="minimal">Minimal Template</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="resume-sections">
+                    <!-- Personal Information -->
+                    <section class="resume-section">
+                        <h2><i class="fas fa-user"></i> Personal Information</h2>
+                        <div class="form-group">
+                            <label for="fullName">Full Name</label>
+                            <input type="text" id="fullName" placeholder="Your full name">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" placeholder="your.email@example.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone</label>
+                                <input type="tel" id="phone" placeholder="+254 700 000 000">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="location">Location</label>
+                                <input type="text" id="location" placeholder="City, Country">
+                            </div>
+                            <div class="form-group">
+                                <label for="linkedin">LinkedIn Profile</label>
+                                <input type="url" id="linkedin" placeholder="https://linkedin.com/in/yourprofile">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="website">Personal Website (Optional)</label>
+                            <input type="url" id="website" placeholder="https://yourwebsite.com">
+                        </div>
+                    </section>
+
+                    <!-- Professional Summary -->
+                    <section class="resume-section">
+                        <h2><i class="fas fa-file-alt"></i> Professional Summary</h2>
+                        <div class="form-group">
+                            <textarea id="summary" rows="4" placeholder="Write a brief summary of your professional background and career objectives..."></textarea>
+                        </div>
+                    </section>
+
+                    <!-- Work Experience -->
+                    <section class="resume-section">
+                        <h2><i class="fas fa-briefcase"></i> Work Experience</h2>
+                        <div id="experienceContainer">
+                            <div class="experience-entry">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Company Name</label>
+                                        <input type="text" class="company-name" placeholder="Company name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Job Title</label>
+                                        <input type="text" class="job-title" placeholder="Your position">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Start Date</label>
+                                        <input type="date" class="start-date">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>End Date</label>
+                                        <input type="date" class="end-date">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Responsibilities</label>
+                                    <textarea class="responsibilities" rows="3" placeholder="List your key responsibilities and achievements..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline" id="addExperience">
+                            <i class="fas fa-plus"></i> Add Another Experience
+                        </button>
+                    </section>
+
+                    <!-- Education -->
+                    <section class="resume-section">
+                        <h2><i class="fas fa-graduation-cap"></i> Education</h2>
+                        <div id="educationContainer">
+                            <div class="education-entry">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Institution</label>
+                                        <input type="text" class="institution" placeholder="School/University name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Degree</label>
+                                        <input type="text" class="degree" placeholder="Your degree">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Start Date</label>
+                                        <input type="date" class="start-date">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>End Date</label>
+                                        <input type="date" class="end-date">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline" id="addEducation">
+                            <i class="fas fa-plus"></i> Add Another Education
+                        </button>
+                    </section>
+
+                    <!-- Skills -->
+                    <section class="resume-section">
+                        <h2><i class="fas fa-tools"></i> Skills</h2>
+                        <div class="form-group">
+                            <label>Technical Skills</label>
+                            <input type="text" id="technicalSkills" placeholder="e.g., JavaScript, Python, React (comma-separated)">
+                        </div>
+                        <div class="form-group">
+                            <label>Soft Skills</label>
+                            <input type="text" id="softSkills" placeholder="e.g., Leadership, Communication, Problem Solving (comma-separated)">
+                        </div>
+                    </section>
+
+                    <!-- Certifications & Training -->
+                    <section class="resume-section">
+                        <h2><i class="fas fa-certificate"></i> Certifications & Training</h2>
+                        <div id="certificationsContainer">
+                            <div class="certification-entry">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Certification Name</label>
+                                        <input type="text" class="cert-name" placeholder="Certification name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Issuing Organization</label>
+                                        <input type="text" class="issuer" placeholder="Organization name">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Date Obtained</label>
+                                        <input type="date" class="date-obtained">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Certificate URL/Image</label>
+                                        <input type="text" class="cert-url" placeholder="URL or upload image">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline" id="addCertification">
+                            <i class="fas fa-plus"></i> Add Another Certification
+                        </button>
+                    </section>
+
+                    <!-- Projects & Portfolio -->
+                    <section class="resume-section">
+                        <h2><i class="fas fa-project-diagram"></i> Projects & Portfolio</h2>
+                        <div id="projectsContainer">
+                            <div class="project-entry">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Project Name</label>
+                                        <input type="text" class="project-name" placeholder="Project name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Project URL</label>
+                                        <input type="url" class="project-url" placeholder="https://project-url.com">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Project Description</label>
+                                    <textarea class="project-description" rows="3" placeholder="Describe your project and your role..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline" id="addProject">
+                            <i class="fas fa-plus"></i> Add Another Project
+                        </button>
+                    </section>
+
+                    <!-- Achievements & Awards -->
+                    <section class="resume-section">
+                        <h2><i class="fas fa-trophy"></i> Achievements & Awards</h2>
+                        <div id="achievementsContainer">
+                            <div class="achievement-entry">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Achievement/Award</label>
+                                        <input type="text" class="achievement-name" placeholder="Achievement or award name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Date</label>
+                                        <input type="date" class="achievement-date">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    <textarea class="achievement-description" rows="2" placeholder="Brief description of the achievement..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline" id="addAchievement">
+                            <i class="fas fa-plus"></i> Add Another Achievement
+                        </button>
+                    </section>
+
+                    <!-- References -->
+                    <section class="resume-section">
+                        <h2><i class="fas fa-users"></i> References</h2>
+                        <div id="referencesContainer">
+                            <div class="reference-entry">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Reference Name</label>
+                                        <input type="text" class="reference-name" placeholder="Full name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Position</label>
+                                        <input type="text" class="reference-position" placeholder="Their position">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Company</label>
+                                        <input type="text" class="reference-company" placeholder="Company name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Contact</label>
+                                        <input type="text" class="reference-contact" placeholder="Email or phone">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline" id="addReference">
+                            <i class="fas fa-plus"></i> Add Another Reference
+                        </button>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Resume Preview Section -->
+            <div class="resume-preview">
+                <h2>Preview</h2>
+                <div id="resumePreview" class="preview-content">
+                    <!-- Preview content will be dynamically populated here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About JobHive</h3>
+                <p>JobHive is Kenya's premier job portal connecting youth with employment opportunities. We focus on entry-level positions, internships, and part-time work to help young professionals start their careers.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#jobs">Find Jobs</a></li>
+                    <li><a href="#resume-builder">Resume Builder</a></li>
+                    <li><a href="#employer">For Employers</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Popular Locations</h3>
+                <ul>
+                    <li><a href="#">Nairobi</a></li>
+                    <li><a href="#">Mombasa</a></li>
+                    <li><a href="#">Kisumu</a></li>
+                    <li><a href="#">Nakuru</a></li>
+                    <li><a href="#">Eldoret</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Info</h3>
+                <ul>
+                    <li>Email: info@jobhive.co.ke</li>
+                    <li>Phone: +254 700 000 000</li>
+                    <li>Address: Westlands, Nairobi</li>
+                    <li>Working Hours: Mon-Fri 9AM-5PM</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 JobHive Kenya. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Login</h2>
+            <form id="loginForm">
+                <input type="email" placeholder="Email" required>
+                <input type="password" placeholder="Password" required>
+                <button type="submit" class="btn">Login</button>
+                <p>Don't have an account? <a href="#" id="showRegister">Register</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Register</h2>
+            <form id="registerForm">
+                <input type="text" placeholder="Full Name" required>
+                <input type="email" placeholder="Email" required>
+                <input type="password" placeholder="Password" required>
+                <select required>
+                    <option value="">Select Account Type</option>
+                    <option value="jobseeker">Job Seeker</option>
+                    <option value="employer">Employer</option>
+                </select>
+                <button type="submit" class="btn">Register</button>
+                <p>Already have an account? <a href="#" id="showLogin">Login</a></p>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html> 
